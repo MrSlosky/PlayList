@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loading</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <img src="background.jpg" alt="Background" class="background">
+        <!-- Particle Effect Circles -->
+        <div id="particles-container"></div>
+    </div>
+    <!-- Background Video (optional - uncomment and set src) -->
+    <video id="videoBg" autoplay loop muted playsinline preload="auto">
+        <!-- <source src="background.mp4" type="video/mp4"> -->
+        <!-- <source src="background.webm" type="video/webm"> -->
+    </video>
+    <!-- Background GIF (optional - uncomment to use instead of video) -->
+    <!-- <img id="gifBg" src="background.gif" alt="Background" class="gif-background"> -->
+    <audio id="audioBg" loop preload="auto" muted>
+        <!-- Audio source will be set dynamically -->
+    </audio>
+    
+    <div class="overlay"></div>
+    
+    <div class="main">
+        <h1>Tinsel Roleplay</h1>
+        <p class="tagline">Vanilla GTA Enhanced RP • Free-to-Play • Built from Scratch • NPC Storylines • Authentic Experience</p>
+        
+        <div class="loader">
+            <div class="bar-container">
+                <div class="bar" id="bar"></div>
+            </div>
+            <div class="loader-text">
+                <span id="pct">0%</span>
+                <span id="msg">Connecting...</span>
+            </div>
+        </div>
+        
+        <!-- Music Player -->
+        <div class="music-player" id="musicPlayer">
+            <div class="music-player-content">
+                <div class="music-visualizer">
+                    <div class="equalizer-bars">
+                        <div class="eq-bar" style="animation-delay: 0s;"></div>
+                        <div class="eq-bar" style="animation-delay: 0.1s;"></div>
+                        <div class="eq-bar" style="animation-delay: 0.2s;"></div>
+                        <div class="eq-bar" style="animation-delay: 0.3s;"></div>
+                        <div class="eq-bar" style="animation-delay: 0.4s;"></div>
+                    </div>
+                </div>
+                <div class="music-info">
+                    <div class="music-title-wrapper">
+                        <div class="music-title" id="musicTitle">Loading...</div>
+                    </div>
+                    <div class="music-artist" id="musicArtist">Loading...</div>
+                </div>
+                <div class="music-controls">
+                    <button class="music-btn" id="musicToggle" title="Play/Pause">
+                        <span class="play-icon">▶</span>
+                        <span class="pause-icon">⏸</span>
+                    </button>
+                    <button class="music-btn mute-btn" id="musicMute" title="Mute/Unmute">
+                        <span class="unmute-icon">🔊</span>
+                        <span class="mute-icon">🔇</span>
+                    </button>
+                </div>
+            </div>
+            <div class="music-wave"></div>
+        </div>
+        <div class="music-hint">
+            <span>Press <kbd>M</kbd> to mute • <kbd>Space</kbd> to play/pause</span>
+        </div>
+    
+    <div class="footer">
+        <p>Discord: discord.tinselrp.com • Website: tinselrp.com</p>
+    </div>
+
+    <script>
+        // ============================================
+        // PARTICLE EFFECT GENERATION
+        // ============================================
+        (function() {
+            var particlesContainer = document.getElementById('particles-container');
+            if (!particlesContainer) return;
+            
+            var particleNum = 200;
+            var particleBaseSize = 8;
+            
+            // Helper function to generate random number
+            function random(max) {
+                return Math.floor(Math.random() * max);
+            }
+            
+            // Generate particles
+            for (var i = 1; i <= particleNum; i++) {
+                var circleSize = random(particleBaseSize) + 1;
+                var startPositionY = random(10) + 100;
+                var moveDuration = 28000 + random(9000);
+                var animationDelay = random(37000);
+                var circleDelay = random(4000);
+                
+                // Create container
+                var container = document.createElement('div');
+                container.className = 'circle-container';
+                container.style.width = circleSize + 'px';
+                container.style.height = circleSize + 'px';
+                container.style.animationDelay = animationDelay + 'ms';
+                
+                // Create animation keyframes
+                var startX = random(100);
+                var endX = random(100);
+                var endY = -startPositionY - random(30);
+                
+                var style = document.createElement('style');
+                var animationName = 'move-frames-' + i;
+                style.textContent = '@keyframes ' + animationName + ' { ' +
+                    'from { transform: translate3d(' + startX + 'vw, ' + startPositionY + 'vh, 0); } ' +
+                    'to { transform: translate3d(' + endX + 'vw, ' + endY + 'vh, 0); } ' +
+                    '}';
+                document.head.appendChild(style);
+                
+                container.style.animationName = animationName;
+                container.style.animationDuration = moveDuration + 'ms';
+                
+                // Create circle
+                var circle = document.createElement('div');
+                circle.className = 'circle';
+                circle.style.animationDelay = circleDelay + 'ms';
+                
+                container.appendChild(circle);
+                particlesContainer.appendChild(container);
+            }
+        })();
+        
+        // ============================================
+        // BACKGROUND VIDEO/GIF CONFIGURATION
+        // ============================================
+        (function() {
+            var videoBg = document.getElementById('videoBg');
+            var gifBg = document.getElementById('gifBg');
+            
+            // Check if video has sources
+            if (videoBg) {
+                var hasVideoSource = false;
+                var sources = videoBg.querySelectorAll('source');
+                if (sources.length > 0) {
+                    hasVideoSource = true;
+                } else if (videoBg.src) {
+                    hasVideoSource = true;
+                }
+                
+                if (hasVideoSource) {
+                    videoBg.addEventListener('loadeddata', function() {
+                        videoBg.classList.add('playing');
+                        console.log('Background video loaded and playing');
+                    });
+                    
+                    videoBg.addEventListener('error', function() {
+                        console.warn('Background video failed to load, using fallback');
+                    });
+                    
+                    // Try to play video
+                    videoBg.play().then(function() {
+                        videoBg.classList.add('playing');
+                    }).catch(function(e) {
+                        console.warn('Video autoplay failed:', e);
+                        // Still show video if it loads
+                        videoBg.addEventListener('loadeddata', function() {
+                            videoBg.classList.add('playing');
+                        });
+                    });
+                }
+            }
+            
+            // Check if GIF exists and is loaded
+            if (gifBg) {
+                gifBg.addEventListener('load', function() {
+                    gifBg.classList.add('active');
+                    console.log('Background GIF loaded');
+                });
+                
+                gifBg.addEventListener('error', function() {
+                    console.warn('Background GIF failed to load');
+                });
+                
+                // If already loaded
+                if (gifBg.complete && gifBg.naturalHeight !== 0) {
+                    gifBg.classList.add('active');
+                }
+            }
+        })();
+        
+        // ============================================
+        // MUSIC CONFIGURATION - Add your tracks here
+        // ============================================
+        var musicTracks = [
+            {
+                url: 'https://github.com/MrSlosky/PlayList/raw/refs/heads/main/39Lowse%20-%2010k%20Down.mp3',
+                title: '10k',
+                artist: '39Lowse',
+                type: 'audio/mpeg'
+            },
+            {
+                url: 'https://github.com/MrSlosky/PlayList/raw/refs/heads/main/Tayfun%20-%20Figo%20Music%20Video%20_%20GRM%20Daily.mp3',
+                title: 'Figo',
+                artist: 'Tayfun',
+                type: 'audio/mpeg'
+            },
+            // OGG format is NOT supported in FiveM Chromium - use MP3 instead
+            // {
+            //     url: '39Lowse.ogg',
+            //     title: '10k',
+            //     artist: '39Lowse',
+            //     type: 'audio/ogg'
+            // }
+            // Add more tracks here:
+            // {
+            //     url: 'path/to/your/song.mp3',
+            //     title: 'Song Title',
+            //     artist: 'Artist Name',
+            //     type: 'audio/mpeg'
+            // },
+        ];
+        
+        // Filter out unsupported formats (OGG doesn't work in FiveM Chromium)
+        var supportedTracks = musicTracks.filter(function(track) {
+            // Prefer MP3, MP4, WebM, or HTTP URLs (which are usually MP3)
+            return track.url.endsWith('.mp3') || 
+                   track.url.endsWith('.mp4') || 
+                   track.url.endsWith('.webm') || 
+                   track.url.startsWith('http') ||
+                   track.type === 'audio/mpeg';
+        });
+        
+        // If no supported tracks, use all tracks (fallback)
+        if (supportedTracks.length === 0) {
+            supportedTracks = musicTracks;
+        }
+        
+        // Randomly select from supported tracks
+        var selectedTrack = supportedTracks[Math.floor(Math.random() * supportedTracks.length)];
+        console.log('Selected track:', selectedTrack.title, 'by', selectedTrack.artist);
+        console.log('Track URL:', selectedTrack.url);
+        
+        // Show content immediately
+        var bar = document.getElementById('bar');
+        var pct = document.getElementById('pct');
+        var msg = document.getElementById('msg');
+        
+        var total = 0;
+        var current = 0;
+        
+        var statusMessages = {
+            'INIT_BEFORE_MAP_LOADED': 'Loading world data...',
+            'INIT_AFTER_MAP_LOADED': 'Initializing systems...',
+            'INIT_SESSION': 'Connecting to server...',
+            'performMapLoadFunction': 'Loading map resources...',
+            'startDataFileEntries': 'Processing files...',
+            'onLogLine': 'Starting game...'
+        };
+        
+        function setProgress(percent, message) {
+            if (bar) bar.style.width = percent + '%';
+            if (pct) pct.textContent = Math.round(percent) + '%';
+            if (msg && message) msg.textContent = message;
+        }
+        
+        // Update music player display with selected track
+        var musicTitle = document.getElementById('musicTitle');
+        var musicArtist = document.getElementById('musicArtist');
+        if (musicTitle) musicTitle.textContent = selectedTrack.title;
+        if (musicArtist) musicArtist.textContent = selectedTrack.artist;
+        
+        // Make sure music player is visible
+        var musicPlayer = document.getElementById('musicPlayer');
+        if (musicPlayer) {
+            musicPlayer.style.display = 'block';
+            musicPlayer.style.opacity = '1';
+        }
+        
+        // Enable scrolling animation only if text overflows
+        setTimeout(function() {
+            if (musicTitle) {
+                var titleWrapper = musicTitle.parentElement;
+                if (titleWrapper && musicTitle.scrollWidth > titleWrapper.offsetWidth) {
+                    var scrollDistance = musicTitle.scrollWidth - titleWrapper.offsetWidth;
+                    musicTitle.style.setProperty('--scroll-distance', '-' + scrollDistance + 'px');
+                    musicTitle.style.animation = 'scrollText 8s linear infinite';
+                }
+            }
+        }, 100);
+        
+        // Load audio IMMEDIATELY - play selected music
+        var audio = document.getElementById('audioBg');
+        var audioStatus = document.getElementById('audioStatus');
+        
+        if (audio) {
+            // Set the audio source to the randomly selected track
+            audio.src = selectedTrack.url;
+            
+            audio.volume = 0.7; // Set volume to 70%
+            // Start muted to allow autoplay (browsers allow muted autoplay)
+            audio.muted = true;
+            
+            if (audioStatus) audioStatus.textContent = 'Initializing...';
+            
+            console.log('Audio element found, starting load process...');
+            console.log('Audio src:', audio.src);
+            console.log('Audio networkState:', audio.networkState);
+            
+            // Function to unmute and ensure playback
+            function unmuteAndPlay() {
+                if (audio.muted) {
+                    audio.muted = false;
+                    console.log('Audio unmuted');
+                    // Update mute button state if it exists
+                    var musicMute = document.getElementById('musicMute');
+                    if (musicMute) {
+                        musicMute.classList.remove('muted');
+                    }
+                }
+                // Try to play if not already playing
+                if (audio.paused) {
+                    audio.play().then(function() {
+                        console.log('Audio playing after unmute!');
+                    }).catch(function(e) {
+                        console.warn('Play failed after unmute:', e);
+                    });
+                }
+            }
+            
+            // Check network state first
+            audio.addEventListener('loadstart', function() {
+                console.log('Audio loadstart event fired');
+                if (audioStatus) audioStatus.textContent = 'Starting load...';
+            });
+            
+            // Error handling FIRST - check if file exists
+            audio.addEventListener('error', function(e) {
+                console.error('Audio ERROR event fired!');
+                console.error('Network state:', audio.networkState);
+                console.error('Ready state:', audio.readyState);
+                if (audio.error) {
+                    console.error('Error code:', audio.error.code);
+                    console.error('Error message:', audio.error.message);
+                    switch(audio.error.code) {
+                        case 1: // MEDIA_ERR_ABORTED
+                            console.error('File loading was aborted');
+                            break;
+                        case 2: // MEDIA_ERR_NETWORK
+                            console.error('Network error - file may not exist or path is wrong');
+                            break;
+                        case 3: // MEDIA_ERR_DECODE
+                            console.error('File format error - Audio file may not be supported or corrupted');
+                            console.error('DEMUXER_ERROR_COULD_NOT_OPEN means:');
+                            console.error('1. File format/codec not supported by Chromium');
+                            console.error('2. File is corrupted');
+                            console.error('3. File path is wrong');
+                            console.error('Try re-encoding to WebM format (best for Chromium):');
+                            console.error('Option 1 - WebM (RECOMMENDED):');
+                            console.error('  - Format: WebM');
+                            console.error('  - Codec: Opus or Vorbis');
+                            console.error('  - Bitrate: 128-192kbps');
+                            console.error('  - Sample Rate: 44100 Hz');
+                            console.error('  - Use: cloudconvert.com or FFmpeg');
+                            console.error('Option 2 - Re-encode OGG:');
+                            console.error('  - Format: OGG Vorbis');
+                            console.error('  - Quality: 5 (or 128-192kbps)');
+                            console.error('  - Sample Rate: 44100 Hz');
+                            console.error('  - Use Audacity: File > Export > Export as OGG');
+                            if (audioStatus) audioStatus.textContent = 'Codec error - try WebM format';
+                            break;
+                        case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+                            console.error('File format not supported');
+                            break;
+                    }
+                }
+                if (audioStatus) audioStatus.textContent = 'Error: ' + (audio.error ? audio.error.message : 'Unknown');
+            });
+            
+            // When metadata is loaded
+            audio.addEventListener('loadedmetadata', function() {
+                console.log('Audio metadata loaded!');
+                console.log('Duration:', audio.duration);
+                console.log('Ready state:', audio.readyState);
+                if (audioStatus) audioStatus.textContent = 'Metadata loaded';
+            });
+            
+            // When data is loaded
+            audio.addEventListener('loadeddata', function() {
+                console.log('Audio data loaded!');
+                console.log('Ready state:', audio.readyState);
+                if (audioStatus) audioStatus.textContent = 'Data loaded';
+                // Try to play now (muted autoplay is allowed)
+                audio.play().then(function() {
+                    console.log('Audio playing (muted)!');
+                    if (audioStatus) audioStatus.textContent = 'Playing (muted)';
+                    // Unmute after a short delay
+                    setTimeout(unmuteAndPlay, 500);
+                }).catch(function(e) {
+                    console.log('Play failed:', e);
+                    if (audioStatus) audioStatus.textContent = 'Play blocked';
+                });
+            });
+            
+            // When can start playing
+            audio.addEventListener('canplay', function() {
+                console.log('Audio can play!');
+                if (audioStatus) audioStatus.textContent = 'Ready';
+                audio.play().then(function() {
+                    if (audioStatus) audioStatus.textContent = 'Playing (muted)';
+                    // Unmute after a short delay
+                    setTimeout(unmuteAndPlay, 500);
+                }).catch(function(e) {
+                    console.log('Play failed:', e);
+                });
+            });
+            
+            audio.addEventListener('canplaythrough', function() {
+                console.log('Audio can play through!');
+                audio.play().then(function() {
+                    if (audioStatus) audioStatus.textContent = 'Playing (muted)';
+                    // Unmute after a short delay
+                    setTimeout(unmuteAndPlay, 500);
+                }).catch(function(e) {
+                    console.log('Play failed:', e);
+                });
+            });
+            
+            // When actually playing
+            audio.addEventListener('playing', function() {
+                console.log('Audio is now playing!');
+                // Unmute if still muted (after a brief delay to ensure playback started)
+                setTimeout(unmuteAndPlay, 300);
+                // Show music player and add playing class
+                var musicPlayer = document.getElementById('musicPlayer');
+                if (musicPlayer) {
+                    musicPlayer.classList.add('playing');
+                }
+                // Update play/pause button
+                var musicToggle = document.getElementById('musicToggle');
+                if (musicToggle) {
+                    musicToggle.classList.add('playing');
+                }
+            });
+            
+            // Progress tracking
+            audio.addEventListener('progress', function() {
+                if (audio.buffered.length > 0) {
+                    var loaded = audio.buffered.end(0);
+                    var duration = audio.duration;
+                    if (duration > 0) {
+                        var percent = (loaded / duration) * 100;
+                        console.log('Audio loading:', Math.round(percent) + '%');
+                        if (audioStatus && audioStatus.textContent.indexOf('Loading') !== -1) {
+                            audioStatus.textContent = 'Loading ' + Math.round(percent) + '%';
+                        }
+                    } else {
+                        console.log('Audio buffering...');
+                    }
+                }
+            });
+            
+            // Stalled event
+            audio.addEventListener('stalled', function() {
+                console.warn('Audio loading stalled');
+                console.warn('This usually means:');
+                console.warn('1. File is too large and loading slowly');
+                console.warn('2. Network issue');
+                console.warn('3. File format issue');
+                if (audioStatus) audioStatus.textContent = 'Stalled - check console';
+                // Try to reload
+                setTimeout(function() {
+                    if (audio.networkState === 3) {
+                        console.log('Reloading audio...');
+                        audio.load();
+                    }
+                }, 2000);
+            });
+            
+            // Suspend event
+            audio.addEventListener('suspend', function() {
+                console.warn('Audio loading suspended');
+            });
+            
+            // Try loading the selected audio
+            console.log('Loading audio:', selectedTrack.url);
+            audio.load();
+            
+            // Try to play immediately (muted autoplay is usually allowed)
+            setTimeout(function() {
+                if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+                    audio.play().then(function() {
+                        console.log('Audio started playing immediately (muted)');
+                        setTimeout(unmuteAndPlay, 1000);
+                    }).catch(function(e) {
+                        console.log('Immediate play failed (will retry on canplay):', e);
+                    });
+                }
+            }, 100);
+            
+            // If online audio fails, try fallback tracks (if available)
+            setTimeout(function() {
+                if (audio.readyState === 0 && audio.networkState === 3 && audio.error) {
+                    console.log('Selected track failed, trying fallback...');
+                    // Find a fallback track (prefer MP3, skip OGG)
+                    var fallbackTrack = musicTracks.find(function(track) {
+                        return track.url !== selectedTrack.url && 
+                               (track.url.endsWith('.mp3') || 
+                                track.url.endsWith('.mp4') || 
+                                track.url.endsWith('.webm') ||
+                                track.url.startsWith('http'));
+                    });
+                    if (fallbackTrack) {
+                        console.log('Trying fallback:', fallbackTrack.url);
+                        selectedTrack = fallbackTrack;
+                        audio.src = fallbackTrack.url;
+                        if (musicTitle) musicTitle.textContent = fallbackTrack.title;
+                        if (musicArtist) musicArtist.textContent = fallbackTrack.artist;
+                        audio.load();
+                    } else {
+                        console.warn('No supported fallback tracks available. OGG format is not supported in FiveM.');
+                    }
+                }
+            }, 2000);
+            
+            // Check after delay - diagnose the issue
+            setTimeout(function() {
+                console.log('=== Audio Status Check (5 seconds) ===');
+                console.log('NetworkState:', audio.networkState, '(0=empty, 1=idle, 2=loading, 3=no source)');
+                console.log('ReadyState:', audio.readyState, '(0=nothing, 1=metadata, 2=current data, 3=future data, 4=enough data)');
+                console.log('Error:', audio.error);
+                console.log('Current src:', audio.currentSrc || audio.src);
+                console.log('Duration:', audio.duration, 'seconds');
+                
+                if (audio.error) {
+                    console.error('=== ERROR FOUND ===');
+                    console.error('Error Code:', audio.error.code);
+                    console.error('Error Message:', audio.error.message);
+                    if (audio.error.code === 3) {
+                        console.error('');
+                        console.error('CODEC ERROR - The OGG file format is not compatible!');
+                        console.error('Solution: Re-encode the OGG file with these EXACT settings:');
+                        console.error('  Tool: Audacity (free)');
+                        console.error('  1. Open 39Lowse.ogg in Audacity');
+                        console.error('  2. File > Export > Export as OGG');
+                        console.error('  3. Quality: 5 (or 128-192kbps)');
+                        console.error('  4. Sample Rate: 44100 Hz');
+                        console.error('  5. Channels: Stereo');
+                        console.error('  6. Save and replace the file');
+                        console.error('');
+                        console.error('OR convert to WebM format (better compatibility):');
+                        console.error('  Use cloudconvert.com: OGG → WebM (Opus codec)');
+                    }
+                } else if (audio.networkState === 2 && audio.readyState === 0) {
+                    console.error('');
+                    console.error('=== CODEC COMPATIBILITY ISSUE ===');
+                    console.error('The OGG file is loading but Chromium cannot decode it.');
+                    console.error('This means the OGG file uses an unsupported codec.');
+                    console.error('');
+                    console.error('SOLUTION: Re-encode the file with Audacity:');
+                    console.error('1. Open 39Lowse.ogg in Audacity');
+                    console.error('2. File > Export > Export as OGG');
+                    console.error('3. Quality slider: Set to 5 (or 128-192kbps)');
+                    console.error('4. Sample Rate: 44100 Hz (IMPORTANT - must be 44100)');
+                    console.error('5. Channels: Stereo');
+                    console.error('6. Save and replace the file');
+                    console.error('');
+                    console.error('OR convert to WebM (better):');
+                    console.error('Use cloudconvert.com: OGG → WebM (Opus codec, 192kbps)');
+                    console.error('');
+                    if (audioStatus) audioStatus.textContent = 'Codec error - re-encode needed';
+                } else if (audio.readyState > 0) {
+                    console.log('✓ Audio is loading! ReadyState:', audio.readyState);
+                }
+            }, 5000);
+            
+            // When paused
+            audio.addEventListener('pause', function() {
+                console.log('Audio paused');
+                // Update play/pause button and player state
+                var musicToggle = document.getElementById('musicToggle');
+                if (musicToggle) {
+                    musicToggle.classList.remove('playing');
+                }
+                var musicPlayer = document.getElementById('musicPlayer');
+                if (musicPlayer) {
+                    musicPlayer.classList.remove('playing');
+                }
+            });
+            
+            // When ended (should loop)
+            audio.addEventListener('ended', function() {
+                console.log('Audio ended, restarting...');
+                audio.currentTime = 0;
+                audio.play().catch(function() {});
+            });
+            
+            // Music player controls
+            var musicToggle = document.getElementById('musicToggle');
+            if (musicToggle) {
+                musicToggle.addEventListener('click', function() {
+                    if (audio.paused) {
+                        audio.play().then(function() {
+                            musicToggle.classList.add('playing');
+                            var musicPlayer = document.getElementById('musicPlayer');
+                            if (musicPlayer) musicPlayer.classList.add('playing');
+                            unmuteAndPlay(); // Ensure unmuted when user clicks
+                        }).catch(function() {});
+                    } else {
+                        audio.pause();
+                        musicToggle.classList.remove('playing');
+                        var musicPlayer = document.getElementById('musicPlayer');
+                        if (musicPlayer) musicPlayer.classList.remove('playing');
+                    }
+                });
+            }
+            
+            // Mute button functionality
+            var musicMute = document.getElementById('musicMute');
+            function toggleMute() {
+                if (audio) {
+                    audio.muted = !audio.muted;
+                    updateMuteButton();
+                    console.log('Audio muted:', audio.muted);
+                }
+            }
+            
+            function updateMuteButton() {
+                if (musicMute && audio) {
+                    if (audio.muted) {
+                        musicMute.classList.add('muted');
+                    } else {
+                        musicMute.classList.remove('muted');
+                    }
+                }
+            }
+            
+            // Update mute button state when audio mute state changes
+            if (audio) {
+                audio.addEventListener('volumechange', updateMuteButton);
+            }
+            
+            if (musicMute) {
+                musicMute.addEventListener('click', toggleMute);
+                // Initialize button state
+                updateMuteButton();
+            }
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Only trigger if not typing in an input field
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    // M key to mute/unmute
+                    if (e.key === 'm' || e.key === 'M') {
+                        e.preventDefault();
+                        toggleMute();
+                    }
+                    // Spacebar to play/pause
+                    if (e.key === ' ' || e.key === 'Spacebar') {
+                        e.preventDefault();
+                        if (audio) {
+                            if (audio.paused) {
+                                audio.play().then(function() {
+                                    var musicToggle = document.getElementById('musicToggle');
+                                    if (musicToggle) musicToggle.classList.add('playing');
+                                    var musicPlayer = document.getElementById('musicPlayer');
+                                    if (musicPlayer) musicPlayer.classList.add('playing');
+                                    unmuteAndPlay(); // Ensure unmuted when user plays
+                                }).catch(function() {});
+                            } else {
+                                audio.pause();
+                                var musicToggle = document.getElementById('musicToggle');
+                                if (musicToggle) musicToggle.classList.remove('playing');
+                                var musicPlayer = document.getElementById('musicPlayer');
+                                if (musicPlayer) musicPlayer.classList.remove('playing');
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Enable audio on first user interaction (click, touch, keypress)
+            var audioEnabled = false;
+            function enableAudioOnInteraction() {
+                if (!audioEnabled) {
+                    audioEnabled = true;
+                    unmuteAndPlay();
+                    console.log('Audio enabled by user interaction');
+                }
+            }
+            
+            // Listen for user interactions to enable audio
+            document.addEventListener('click', enableAudioOnInteraction, { once: true });
+            document.addEventListener('touchstart', enableAudioOnInteraction, { once: true });
+            document.addEventListener('keydown', enableAudioOnInteraction, { once: true });
+        } else {
+            console.error('Audio element not found!');
+            if (audioStatus) audioStatus.textContent = 'Element not found';
+        }
+        
+        var handlers = {
+            startInitFunctionOrder: function(data) {
+                total = data.count;
+                setProgress(0, statusMessages[data.type] || 'Loading...');
+            },
+            initFunctionInvoking: function(data) {
+                setProgress((data.idx / total) * 50);
+            },
+            startDataFileEntries: function(data) {
+                total = data.count;
+                setProgress(50, statusMessages['startDataFileEntries']);
+            },
+            performMapLoadFunction: function(data) {
+                current++;
+                setProgress(50 + ((current / total) * 40), statusMessages['performMapLoadFunction']);
+            },
+            onLogLine: function(data) {
+                setProgress(95, data.message || statusMessages['onLogLine']);
+            },
+            loadProgress: function(data) {
+                if (data.loadFraction !== undefined) {
+                    setProgress(data.loadFraction * 100);
+                }
+            }
+        };
+        
+        window.addEventListener('message', function(e) {
+            if (handlers[e.data.eventName]) {
+                handlers[e.data.eventName](e.data);
+            }
+        });
+    </script>
+</body>
+</html>
